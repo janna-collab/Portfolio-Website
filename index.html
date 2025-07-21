@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jannatun Khusbu's Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Chat bubble styles */
+        .chat-bubble {
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .chat-bubble:hover {
+            transform: scale(1.1);
+            background-color: #7c3aed;
+        }
+        /* Project card hover effect */
+        .project-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        /* Chat overlay styles */
+        .chat-overlay {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            backdrop-filter: blur(10px);
+            background: #000000;
+            border-left: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+        }
+        html.light .chat-overlay {
+            background: #ffffff;
+            color: #1f2937;
+        }
+        .chat-overlay.open {
+            transform: translateX(0);
+        }
+        .chat-container {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .chat-message {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Chat bubble color in light mode: purple */
+        html.light .chat-message {
+            background-color: #7c3aed;
+            color: white;
+        }
+        /* Chat bubble color in dark mode: keep your existing gray */
+        html.dark .chat-message {
+            background-color: #4b5563;
+            color: white;
+        }
+        /* Scrollbar styling */
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .chat-container::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 4px;
+        }
+        html.dark .chat-container::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+        }
+        /* Circular profile picture */
+        .profile-pic {
+            object-fit: cover;
+            border: 4px solid white;
+        }
+        /* Dark mode styles */
+        html.dark {
+            background-color: #1f2937;
+            color: #e5e7eb;
+        }
+        html.dark .bg-gray-100 {
+            background-color: #1f2937;
+        }
+        html.dark .bg-white {
+            background-color: #374151;
+        }
+        html.dark .text-gray-800 {
+            color: #e5e7eb;
+        }
+        html.dark .text-gray-600 {
+            color: #9ca3af;
+        }
+        html.dark .bg-gray-200 {
+            background-color: #4b5563;
+        }
+        html.dark .bg-purple-100 {
+            background-color: #6b7280;
+        }
+        html.dark .border {
+            border-color: #4b5563;
+        }
+        html.dark .chat-overlay {
+            background: #000000;
+            color: #ffffff;
+        }
+        /* Updated About Me section */
+        html.dark #about {
+            background-color: #1f2937;
+        }
+        html.dark .about-card {
+            background: #374151;
+            border-left: 4px solid #a78bfa;
+            color: #e5e7eb;
+        }
+        /* Contact icons hover effect */
+        .contact-link:hover i {
+            transform: scale(1.2);
+            transition: transform 0.3s ease;
+        }
+        /* Typing animation */
+        .typing {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+        }
+        .typing span {
+            width: 8px;
+            height: 8px;
+            background-color: #9ca3af;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        .typing span:nth-child(1) { animation-delay: 0s; }
+        .typing span:nth-child(2) { animation-delay: 0.2s; }
+        .typing span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        html.dark .typing span {
+            background-color: #6b7280;
+        }
+        /* About section card styling */
+        .about-card {
+            background: linear-gradient(135deg, #f9f9fb 0%, #ffffff 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #7B2FF7;
+            opacity: 0;
+            animation: fadeInCard 0.5s ease forwards;
+        }
+        .about-card:nth-child(1) { animation-delay: 0.1s; }
+        .about-card:nth-child(2) { animation-delay: 0.2s; }
+        .about-card:nth-child(3) { animation-delay: 0.3s; }
+        .about-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        @keyframes fadeInCard {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* About section text styling */
+        .about-text {
+            line-height: 1.6;
+        }
+        /* Chat input area styling */
+        #chatInput {
+            background-color: #374151;
+            color: #000000;
+        }
+        #chatInput::placeholder {
+            color: #000000;
+        }
+        html.light #chatInput {
+            background-color: #ffffff;
+            color: #000000;
+        }
+        html.light #chatInput::placeholder {
+            color: #000000;
+        }
+        html.dark #chatInput {
+            background-color: #374151;
+            color: #000000;
+        }
+        html.dark #chatInput::placeholder {
+            color: #000000;
+        }
+        /* Contact form input styling */
+        #name, #email, #message {
+            border: 2px solid #e5e7eb;
+        }
+        #name:focus, #email:focus, #message:focus {
+            border-bottom: 2px solid #000000;
+            outline: none;
+            box-shadow: none;
+        }
+        #name:invalid, #email:invalid, #message:invalid {
+            border-bottom: 2px solid #000000;
+        }
+        html.dark #name, html.dark #email, html.dark #message {
+            border-color: #4b5563;
+        }
+        html.dark #name:focus, html.dark #email:focus, html.dark #message:focus {
+            border-bottom: 2px solid #000000;
+        }
+        html.dark #name:invalid, html.dark #email:invalid, html.dark #message:invalid {
+            border-bottom: 2px solid #000000;
+        }
+        /* Updated Projects section styling */
+        #projects {
+            background-color: #ffffff;
+        }
+        html.dark #projects {
+            background-color: #000000;
+        }
+        /* Home section background and animation */
+        #home {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #6B46C1 0%, #EC4899 100%);
+        }
+        html.light #home {
+            color: #ffffff; /* White text in light mode */
+        }
+        html.dark #home {
+            background: linear-gradient(135deg, #D1D5DB 0%, #A78BFA 100%); /* Light gray to muted purple in dark mode */
+            color: #000000; /* Black text in dark mode */
+        }
+        #home::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"%3E%3Cfilter id="bb"%3E%3CfeGaussianBlur in="SourceGraphic" stdDeviation="20" /%3E%3C/filter%3E%3Cpath fill="%23ffffff22" d="M400,100 A150,150 0 0,1 550,250 A150,150 0 0,1 400,400 A150,150 0 0,1 250,250 A150,150 0 0,1 400,100" filter="url(%23bb)"%3E%3C/path%3E%3C/svg%3E');
+            opacity: 0.1;
+            animation: float 10s infinite ease-in-out;
+            pointer-events: none;
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+        /* Profile picture animation and glow effect */
+        .profile-pic-home {
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 6px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+        .profile-pic-home::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(167, 139, 250, 0.4) 0%, rgba(167, 139, 250, 0) 70%);
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
+        }
+        .profile-pic-home:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+        }
+        /* Text animation */
+        .hero-text {
+            animation: enhancedSlideInLeft 1.2s ease-out;
+        }
+        @keyframes enhancedSlideInLeft {
+            from { opacity: 0; transform: translateX(-100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .hero-btn {
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .hero-btn:hover {
+      transform: translateY(-3px);
+    }
+    .hero-btn:active {
+      transform: translateY(-1px) scale(0.95);
+    }
+    .hero-text span {
+     text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    }
+
+        /* Mobile-specific adjustments */
+        @media (max-width: 640px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            .text-6xl {
+                font-size: 2.5rem;
+            }
+            .text-4xl {
+                font-size: 2rem;
+            }
+            .text-2xl {
+                font-size: 1.25rem;
+            }
+            .text-xl {
+                font-size: 1rem;
+            }
+            .text-base {
+                font-size: 0.875rem;
+            }
+            .profile-pic {
+                width: 6rem;
+                height: 6rem;
+            }
+            .profile-pic-home {
+                width: 16rem;
+                height: 16rem;
+            }
+            .chat-overlay {
+                width: 100%;
+            }
+            .chat-bubble {
+                padding: 0.75rem;
+                font-size: 0.875rem;
+            }
+            .project-card img {
+                height: 10rem;
+            }
+            .contact-link i {
+                font-size: 1rem;
+            }
+            .contact-link a {
+                font-size: 0.875rem;
+            }
+            .about-card {
+                padding: 1rem;
+            }
+            .chat-container {
+                max-height: 70vh;
+            }
+            #home .flex-col {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md fixed w-full z-10 dark:bg-gray-800">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-purple-600 dark:text-purple-400">Jannatun Khusbu's Portfolio</h1>
+            <div class="flex items-center space-x-4 sm:space-x-6">
+                <ul class="flex space-x-4 sm:space-x-6 text-sm sm:text-base">
+                    <li><a href="#home" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Home</a></li>
+                    <li><a href="#about" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">About</a></li>
+                    <li><a href="#projects" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Projects</a></li>
+                    <li><a href="#contact" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Contact</a></li>
+                </ul>
+                <button id="themeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+   <!-- Hero Section -->
+<section id="home" class="min-h-screen flex items-center justify-center">
+    <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12">
+        <!-- Left: Text Content -->
+        <div class="md:w-1/2 text-center md:text-left hero-text">
+            <h1 class="text-6xl md:text-7xl font-extrabold mb-4 tracking-tight leading-tight">
+                 Hello, It's me -<span class="dark:text-purple-400" style="color: #4B0082;">Jannatun Khusbu </span> 
+            </h1>
+             <p class="text-6xl md:text-7xl font-extrabold mb-4 tracking-tight leading-tight">
+                 IT Student
+             </p>
+            <p class="text-xl md:text-2xl mb-8 font-medium max-w-xl mx-auto md:mx-0">
+                Aspiring AI Engineer passionate about building intelligent, data-driven solutions to shape the future.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+            <a href="#contact" class="hero-btn transition-transform transition-colors bg-white text-purple-600 px-5 py-3 rounded-full font-semibold hover:bg-purple-100 dark:bg-gray-700 dark:text-purple-400 dark:hover:bg-gray-600">
+                Get in Touch
+            </a>
+            <a href="assets/resume.pdf" download class="hero-btn transition-transform transition-colors bg-purple-600 text-white px-5 py-3 rounded-lg font-semibold hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600">
+                Download Resume
+            </a>
+            </div>
+        </div>
+        <!-- Right: Profile Picture -->
+        <div class="md:w-auto flex justify-center md:justify-start mt-10 md:mt-0 relative">
+            <img src="assets/profile.jpg" alt="Profile Picture" class="profile-pic-home w-72 h-72 md:w-96 md:h-96 rounded-full shadow-2xl object-cover">
+        </div>
+    </div>
+</section>
+
+    <!-- About Section -->
+    <section id="about" class="py-12 sm:py-20 bg-gray-100 dark:bg-gray-900">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-8 sm:mb-10 text-purple-600 dark:text-purple-400">About Me</h2>
+            <div class="max-w-4xl mx-auto grid gap-6 sm:gap-8 md:grid-cols-3">
+                <!-- Passion -->
+                <div class="about-card">
+                    <i class="fas fa-heart text-2xl text-purple-600 dark:text-purple-400 mb-2"></i>
+                    <h3 class="text-2xl font-semibold mb-4 text-purple-600 dark:text-purple-400">Passion</h3>
+                    <p class="text-base text-gray-600 dark:text-gray-400 about-text">
+                        Hey there! I’m Jannatun Khusbu, fueled by a love for crafting AI-driven solutions that make life smarter and easier. I dive deep into Python, Machine Learning, and Large Language Models, while exploring data analytics with tools like Power BI and SQL. My mission? To build innovative systems that spark real impact.
+                    </p>
+                </div>
+                <!-- Skills -->
+                <div class="about-card">
+                    <i class="fas fa-cogs text-2xl text-purple-600 dark:text-purple-400 mb-2"></i>
+                    <h3 class="text-2xl font-semibold mb-4 text-purple-600 dark:text-purple-400">Skills</h3>
+                    <p class="text-base text-gray-600 dark:text-gray-400 about-text">
+                        <strong>Programming:</strong> Python, C<br>
+                        <strong>Technologies:</strong> Django, Pandas, NumPy, Matplotlib<br>
+                        <strong>Core Concepts:</strong> Data Structures & Algorithms, Machine Learning Basics, Prompt Engineering<br>
+                        <strong>Languages:</strong> English (Fluent), Bengali (Native), Hindi (Fluent)
+                    </p>
+                </div>
+                <!-- Work Experience & Achievements -->
+                <div class="about-card">
+                    <i class="fas fa-trophy text-2xl text-purple-600 dark:text-purple-400 mb-2"></i>
+                    <h3 class="text-2xl font-semibold mb-4 text-purple-600 dark:text-purple-400">Work Experience & Achievements</h3>
+                    <p class="text-base text-gray-600 dark:text-gray-400 about-text">
+                        1. Deloitte Virtual Internship – Data Analytics (2025)<br>
+                        2. AIWallah Internship – Generative AI Development (Jun–Jul 2025)<br>
+                        3. Earned 2nd Prize for my paper “DNA as a Storage Entity” at National Technology Conference
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-12 sm:py-20 bg-white dark:bg-black">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-8 sm:mb-10">My Projects</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Project Card 1: SpeakRight -->
+                <div class="project-card bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                    <img src="assets/speakright.jpg" alt="SpeakRight" class="w-full h-48 object-cover rounded-t-lg">
+                    <div class="p-4 sm:p-6">
+                        <h3 class="text-xl font-semibold mb-2">SpeakRight</h3>
+                        <p class="text-gray-600 mb-4 dark:text-gray-400 text-sm sm:text-base">A full-stack web app for improving English fluency through voice input, transcription, and grammar correction. Built for a hackathon using React.js (Vite), Django REST Framework, Hugging Face, and Google Speech API.</p>
+                        <div class="flex space-x-4">
+                            <a href="YOUR_SPEAKRIGHT_DEMO_LINK_HERE" class="text-purple-600 font-semibold hover:underline dark:text-purple-400 text-sm sm:text-base touch-manipulation">Live Demo</a>
+                            <a href="https://github.com/Kathakali07/speakRight" class="text-purple-600 font-semibold hover:underline dark:text-purple-400 text-sm sm:text-base touch-manipulation">GitHub</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project Card 2: AI Assistant -->
+                <div class="project-card bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                    <img src="assets/ai_assistant.jpg" alt="AI Assistant" class="w-full h-48 object-cover rounded-t-lg">
+                    <div class="p-4 sm:p-6">
+                        <h3 class="text-xl font-semibold mb-2">AI Assistant</h3>
+                        <p class="text-gray-600 mb-4 dark:text-gray-400 text-sm sm:text-base">An AI chatbot using Django and Hugging Face's Mistral-7BInstruct model for context-aware answers. Features secure API integration and a responsive interface.</p>
+                        <div class="flex space-x-4">
+                            <a href="https://www.linkedin.com/posts/jannatun-khusbu-32a8282a7_firstproject-ai-journeybegins-activity-7306156451297665024-dHNc" class="text-purple-600 font-semibold hover:underline dark:text-purple-400 text-sm sm:text-base touch-manipulation">Live Demo</a>
+                            <a href="https://lnkd.in/geuu8pUD" class="text-purple-600 font-semibold hover:underline dark:text-purple-400 text-sm sm:text-base touch-manipulation">GitHub</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project Card 3: AI-Powered MCQ Generator -->
+                <div class="project-card bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                    <img src="assets/mcqgenerator.jpg" alt="AI-Powered MCQ Generator" class="w-full h-48 object-cover rounded-t-lg">
+                    <div class="p-4 sm:p-6">
+                        <h3 class="text-xl font-semibold mb-2">AI-Powered MCQ Generator</h3>
+                        <p class="text-gray-600 mb-4 dark:text-gray-400 text-sm sm:text-base">An MCQ generator using Google FLAN-T5 and Django, creating quiz questions from any input text. Focused on prompt engineering for better question quality.</p>
+                        <div class="flex space-x-4">
+                            <a href="https://www.linkedin.com/posts/jannatun-khusbu-32a8282a7_ai-promptengineering-django-activity-7306894271645655040-PgHJ" class="text-purple-600 font-semibold hover:underline dark:text-purple-400 text-sm sm:text-base touch-manipulation">Live Demo</a>
+                            <a href="https://lnkd.in/gsxHzd3q" class="text-purple-600 font-semibold hover:underline dark:text-purple-400 text-sm sm:text-base touch-manipulation">GitHub</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project Card 4: AI-Powered Portfolio -->
+                <div class="project-card bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                    <img src="assets/portfolio.jpg" alt="AI-Powered Portfolio" class="w-full h-48 object-cover rounded-t-lg">
+                    <div class="p-4 sm:p-6">
+                        <h3 class="text-xl font-semibold mb-2">AI-Powered Portfolio</h3>
+                        <p class="text-gray-600 mb-4 dark:text-gray-400 text-sm sm:text-base">A dynamic portfolio website enhanced with an AI chatbot for interactive user engagement. Built with Html, Css, Java script and tailwindcss and Gemini API for seamless functionality.</p>
+                        <div class="flex space-x-4">
+                            <a href="YOUR_PORTFOLIO_DEMO_LINK_HERE" class="text-purple-600 font-semibold hover:underline dark:text-purple-400 text-sm sm:text-base touch-manipulation">Live Demo</a>
+                            <a href="YOUR_PORTFOLIO_GITHUB_LINK_HERE" class="text-purple-600 font-semibold hover:underline dark:text-purple-400 text-sm sm:text-base touch-manipulation">GitHub</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-12 sm:py-20 bg-white dark:bg-gray-800">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-8 sm:mb-10">Contact Me</h2>
+            <div class="max-w-4xl mx-auto grid gap-6 sm:gap-8 md:grid-cols-2">
+                <!-- Contact Details -->
+                <div class="flex flex-col space-y-4">
+                    <h3 class="text-2xl font-semibold text-purple-600 dark:text-purple-400">Get in Touch</h3>
+                    <p class="text-base sm:text-lg text-gray-600 dark:text-gray-400">Feel free to reach out through any of the following channels:</p>
+                    <div class="flex items-center space-x-3 contact-link">
+                        <i class="fas fa-envelope text-purple-600 dark:text-purple-400 text-xl"></i>
+                        <a href="mailto:jannatun2018snt@gmail.com" class="text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 text-sm sm:text-base">jannatun2018snt@gmail.com</a>
+                    </div>
+                    <div class="flex items-center space-x-3 contact-link">
+                        <i class="fab fa-linkedin text-purple-600 dark:text-purple-400 text-xl"></i>
+                        <a href="https://www.linkedin.com/in/jannatun-khusbu-32a8282a7/" target="_blank" class="text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 text-sm sm:text-base">Jannatun Khusbu</a>
+                    </div>
+                    <div class="flex items-center space-x-3 contact-link">
+                        <i class="fab fa-github text-purple-600 dark:text-purple-400 text-xl"></i>
+                        <a href="https://github.com/janna-collab" target="_blank" class="text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 text-sm sm:text-base">janna_collab</a>
+                    </div>
+                    <p><i class="fas fa-globe" style="color:rgb(135, 27, 223); margin-right: 8px"></i> Based in Kolkata, West Bengal, India (GMT+5:30)</p>
+
+
+                </div>
+                <!-- Contact Form -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4 text-purple-600 dark:text-purple-400">Send a Message</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="name" class="block text-gray-700 dark:text-gray-300 text-sm sm:text-base">Name</label>
+                            <input type="text" id="name" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black dark:bg-gray-700 text-black text-sm sm:text-base" placeholder="Your Name" required>
+                        </div>
+                        <div>
+                            <label for="email" class="block text-gray-700 dark:text-gray-300 text-sm sm:text-base">Email</label>
+                            <input type="email" id="email" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black dark:bg-gray-700 text-black text-sm sm:text-base" placeholder="Your Email" required>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-gray-700 dark:text-gray-300 text-sm sm:text-base">Message</label>
+                            <textarea id="message" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black dark:bg-gray-700 text-black text-sm sm:text-base" rows="5" placeholder="Your Message" required></textarea>
+                        </div>
+                        <button id="submitBtn" class="bg-purple-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full font-semibold hover:bg-purple-700 transition-colors dark:bg-purple-500 dark:hover:bg-purple-600 text-sm sm:text-base">Send Message</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chat Bubble -->
+    <div class="chat-bubble fixed bottom-6 right-6 bg-purple-600 text-white p-4 rounded-full shadow-lg cursor-pointer z-20 dark:bg-purple-500">
+        <span class="text-sm md:text-base">Ask anything about me</span>
+    </div>
+
+    <!-- Chat Overlay -->
+    <div class="chat-overlay fixed top-0 right-0 h-full w-full sm:w-96 bg-black shadow-2xl z-30 flex flex-col text-white dark:text-white">
+        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 flex items-center space-x-3 dark:from-purple-500 dark:to-indigo-500">
+            <img src="assets/profile.jpg" alt="Profile Picture" class="profile-pic w-10 h-10 rounded-full">
+            <h3 class="text-lg font-semibold text-white">Chat with Jannatun (AI)</h3>
+            <button id="closeChat" class="ml-auto text-white hover:text-gray-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="chat-container flex-1 p-4 overflow-y-auto bg-white dark:bg-gray-800">
+            <div class="chat-message bg-gray-700 rounded-lg p-3 mb-2 max-w-[80%] dark:bg-gray-700">
+                <p class="text-white">Hi, I am Jannatun Khusbu, what do you want to know about me?</p>
+                <span class="text-white text-xs dark:text-gray-300">Jannatun Khusbu </span>
+            </div>
+        </div>
+        <div class="p-4 border-t dark:border-gray-600">
+            <div class="flex space-x-2">
+                <input id="chatInput" type="text" class="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-700 text-white dark:bg-gray-700 dark:text-white dark:border-gray-600 text-sm sm:text-base" placeholder="Type your message...">
+                <button id="sendMessage" class="bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1iTPnG3tHrKU7FDolS85w0f1HYsv1puM",
+            authDomain: "jannatun-khusbu-s-portfolio.firebaseapp.com",
+            projectId: "jannatun-khusbu-s-portfolio",
+            storageBucket: "jannatun-khusbu-s-portfolio.firebasestorage.app",
+            messagingSenderId: "760453136002",
+            appId: "1:760453136002:web:8b84bb5f76efb7666ffe9b",
+            measurementId: "G-ZFCGTQM9MN"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+
+        // Contact form submission
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            if (name && email && message) {
+                try {
+                    const response = await fetch('https://formspree.io/f/myzjowkk', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify({ name, email, message })
+                    });
+                    if (response.ok) {
+                        alert('Message sent successfully!');
+                        document.getElementById('name').value = '';
+                        document.getElementById('email').value = '';
+                        document.getElementById('message').value = '';
+                    } else {
+                        alert('Failed to send message. Please try again.');
+                    }
+                } catch (error) {
+                    alert('An error occurred. Please try again later.');
+                }
+            } else {
+                alert('Please fill out all fields.');
+            }
+        });
+
+        // Chat overlay functionality
+        const chatBubble = document.querySelector('.chat-bubble');
+        const chatOverlay = document.querySelector('.chat-overlay');
+        const closeChat = document.getElementById('closeChat');
+        const chatContainer = document.querySelector('.chat-container');
+        const chatInput = document.getElementById('chatInput');
+        const sendMessage = document.getElementById('sendMessage');
+        const myFullName = 'Jannatun Khusbu';
+        const myDescription = 'Aspiring AI Engineer with a strong passion for automation, intelligent systems, and data-driven solutions. Currently exploring Python, Machine Learning, Large Language Models, and Prompt Engineering, with a budding interest in data analytics using tools like Power BI and SQL. Focused on building impactful AI-powered solutions through continuous learning and hands-on experimentation. My hobbies are connecting with new people building meaningful professional relationships and also exploring leveraging AI technology and tools.';
+
+        // Toggle chat overlay and reset initial message
+        chatBubble.addEventListener('click', () => {
+            chatOverlay.classList.toggle('open');
+            if (chatOverlay.classList.contains('open')) {
+                chatContainer.innerHTML = `
+                    <div class="chat-message bg-gray-700 rounded-lg p-3 mb-2 max-w-[80%] dark:bg-gray-700">
+                        <p>Hi, I am ${myFullName}, what do you want to know about me?</p>
+                        <span class="text-xs text-gray-300 dark:text-gray-300">${myFullName}</span>
+                    </div>
+                `;
+            }
+        });
+
+        closeChat.addEventListener('click', () => {
+            chatOverlay.classList.remove('open');
+        });
+
+        // Send message and fetch Gemini API response
+        async function sendChatMessage() {
+            const messageText = chatInput.value.trim();
+            if (!messageText) return;
+
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chat-message bg-purple-100 rounded-lg p-3 mb-2 max-w-[80%] ml-auto dark:bg-gray-700';
+            userMessage.innerHTML = `<p>${messageText}</p><span class="text-white text-xs dark:text-gray-300">You</span>`;
+            chatContainer.appendChild(userMessage);
+
+            // Add typing animation
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'typing';
+            typingIndicator.innerHTML = `<span></span><span></span><span></span>`;
+            chatContainer.appendChild(typingIndicator);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            try {
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=Enter_your_gemini_api_key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `User_message: ${messageText}. Reply naturally to the usermessage and if required then answer based on: ${myDescription} or just simply give friendly reply. Reply in a way that Jannatun Khusbu is herself talking. Reply in short sentences. Be realistic.`
+                            }]
+                        }]
+                    })
+                });
+
+                if (!response.ok) throw new Error('API request failed');
+
+                const data = await response.json();
+                const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I couldn’t process that. Try again!';
+
+                // Remove typing animation
+                typingIndicator.remove();
+
+                // Add AI response
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'chat-message bg-gray-700 rounded-lg p-3 mb-2 max-w-[80%] dark:bg-gray-700';
+                aiMessage.innerHTML = `<p>${aiResponse}</p><span class="text-xs text-gray-300 dark:text-gray-300">${myFullName}</span>`;
+                chatContainer.appendChild(aiMessage);
+            } catch (error) {
+                // Remove typing animation
+                typingIndicator.remove();
+
+                // Show error message
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'chat-message bg-red-100 rounded-lg p-3 mb-2 max-w-[80%] dark:bg-red-900';
+                errorMessage.innerHTML = `<p>Sorry, something went wrong. Please try again or use the contact form.</p><span class="text-xs text-gray-500 dark:text-gray-300">${myFullName}</span>`;
+                chatContainer.appendChild(errorMessage);
+            }
+
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            chatInput.value = '';
+        }
+
+        sendMessage.addEventListener('click', sendChatMessage);
+
+        // Allow sending message with Enter key
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+
+        // Dark mode toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            updateThemeIcon();
+        });
+
+        // Update theme icon based on mode
+        function updateThemeIcon() {
+            const isDark = document.documentElement.classList.contains('dark');
+            themeToggle.innerHTML = isDark
+                ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>`
+                : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>`;
+        }
+
+        // Load saved theme preference
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+        updateThemeIcon();
+
+       
+    </script>
+</body>
+</html>
